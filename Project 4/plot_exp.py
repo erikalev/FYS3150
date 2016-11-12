@@ -75,10 +75,10 @@ plt.ylabel("Accepted configurations/Suggested configurations")
 plt.legend(["T = 2.4"])
 plt.show()
 """
-infile1 = open("build-cpp-Desktop-Release/E_values40.txt", "r")
-infile2 = open("build-cpp-Desktop-Release/M_values40.txt", "r")
-infile3 = open("build-cpp-Desktop-Release/Cv_values40.txt", "r")
-infile4 = open("build-cpp-Desktop-Release/chi_values40.txt", "r")
+infile1 = open("build-cpp-Desktop-Debug/E_values20.txt", "r")
+infile2 = open("build-cpp-Desktop-Debug/M_values20.txt", "r")
+infile3 = open("build-cpp-Desktop-Debug/Cv_values20.txt", "r")
+infile4 = open("build-cpp-Desktop-Debug/chi_values20.txt", "r")
 
 N = 11
 T = np.linspace(2.2, 2.3, N)
@@ -139,7 +139,7 @@ for line in infile8:
     chi60[i] = float(words[0])
     i+=1
 """
-plt.plot(T, chi40)
+plt.plot(T, E40)
 plt.xlabel("T")
 plt.ylabel("Cv")
 plt.show()

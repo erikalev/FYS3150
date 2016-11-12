@@ -88,15 +88,15 @@ void dump_to_file(int max_cycles, double T, int N, double *total_average);
 
 int main(int argc, char* argv[])
 {
-    outputFile1.open("E_values60.txt");
-    outputFile2.open("M_values60.txt");
-    outputFile3.open("Cv_values60.txt");
-    outputFile4.open("chi_values60.txt");
+    outputFile1.open("E_values40.txt");
+    outputFile2.open("M_values40.txt");
+    outputFile3.open("Cv_values40.txt");
+    outputFile4.open("chi_values40.txt");
+    for ( double T = initial_temp; T <= final_temp; T+=temp_step){
 
     int my_rank, numprocs;
     int max_cycles = 1e6;
-    int N = 60;
-
+    int N = 40;
     MPI_Init(&argc, &argv);
     MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
     MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
     if ( (my_rank == numprocs-1) &&( myloop_end < max_cycles) ) myloop_end = max_cycles;
 
     double initial_temp, final_temp, temp_step;
-    initial_temp = 2.2; final_temp = 2.3; temp_step =0.01;
+    initial_temp = 2.2; final_temp = 2.3; temp_step =1;
 
             // broadcast to all nodes common variables
     MPI_Bcast (&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -152,10 +152,11 @@ int main(int argc, char* argv[])
         dump_to_file(max_cycles, T, N, total_average);
     }
     MPI_Finalize();
+    cout << "DONE!" << endl;
     return 0;
 }
 void dump_to_file(int max_cycles, double T, int N, double *total_average){
-    double norm = 1/((double) (max_cycles));  // divided by total number of cycles
+    double norm = 1/((double) (max_cycles)*4);  // divided by total number of cycles in addition to averaging the MPI total
     double Etotal_average = total_average[0]*norm;
     double E2total_average = total_average[1]*norm;
     double Mtotal_average = total_average[2]*norm;
@@ -163,16 +164,16 @@ void dump_to_file(int max_cycles, double T, int N, double *total_average){
     double Mabstotal_average = total_average[4]*norm;
     // all expectation values are per spin, divide by 1/n_spins/n_spins
     double Evariance = (E2total_average- Etotal_average*Etotal_average)/N/N;
-    double Mvariance = (M2total_average - Mabstotal_average*Mabstotal_average)/N/N;
+    double Mabsvariance = (M2total_average - Mabstotal_average*Mabstotal_average)/N/N;
+    double Mvariance = (M2total_average - Mtotal_average*Mtotal_average)/N/N;
     double Cv = Evariance/(T*T);
     double chi = Mvariance/T;
-    cout << Etotal_average/N/N << endl;
     outputFile1 << setiosflags(ios::showpoint | ios::uppercase);
     outputFile2 << setiosflags(ios::showpoint | ios::uppercase);
     outputFile3 << setiosflags(ios::showpoint | ios::uppercase);
     outputFile4 << setiosflags(ios::showpoint | ios::uppercase);
-    outputFile1 << setprecision(10) << setw(20) << Etotal_average/(N*N) << endl;
-    outputFile2 << setprecision(10) << setw(20) << Mabstotal_average/(N*N) << endl;
+    outputFile1 << setprecision(10) << setw(20) << Etotal_average/N/N << endl;
+    outputFile2 << setprecision(10) << setw(20) << Mabstotal_average/N/N << endl;
     outputFile3 << setprecision(10) << setw(20) << Cv << endl;
     outputFile4 << setprecision(10) << setw(20) << chi << endl;
 }
