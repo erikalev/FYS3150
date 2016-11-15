@@ -169,7 +169,6 @@ void dump_to_file(int max_cycles, double T, int N, double *total_average){
     double Mabsvariance = (M2total_average - Mabstotal_average*Mabstotal_average)/N/N;
     //double Mvariance = (M2total_average - Mtotal_average*Mtotal_average)/N/N;
     double Cv = Evariance/(T*T);
-    cout << sqrt(Evariance*N*N) << endl;
     double chi = Mabsvariance/T;
     outputFile1 << setiosflags(ios::showpoint | ios::uppercase);
     outputFile2 << setiosflags(ios::showpoint | ios::uppercase);
