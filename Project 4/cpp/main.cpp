@@ -88,15 +88,15 @@ void dump_to_file(int max_cycles, double T, int N, double *total_average);
 
 int main(int argc, char* argv[])
 {
-    outputFile1.open("E_values40.txt");
-    outputFile2.open("M_values40.txt");
-    outputFile3.open("Cv_values40.txt");
-    outputFile4.open("chi_values40.txt");
-    for ( double T = initial_temp; T <= final_temp; T+=temp_step){
+    outputFile1.open("E_values20.txt");
+    outputFile2.open("M_values20.txt");
+    outputFile3.open("Cv_values20.txt");
+    outputFile4.open("chi_values20.txt");
 
-    int my_rank, numprocs;
+    //int my_rank, numprocs;
     int max_cycles = 1e6;
     int N = 40;
+    /*
     MPI_Init(&argc, &argv);
     MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
     MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
@@ -105,22 +105,22 @@ int main(int argc, char* argv[])
     int myloop_begin = my_rank*no_intervalls + 1;
     int myloop_end = (my_rank+1)*no_intervalls;
     if ( (my_rank == numprocs-1) &&( myloop_end < max_cycles) ) myloop_end = max_cycles;
-
+    */
     double initial_temp, final_temp, temp_step;
-    initial_temp = 2.2; final_temp = 2.3; temp_step =1;
+    initial_temp = 2.2; final_temp = 2.3; temp_step =0.01;
 
             // broadcast to all nodes common variables
-    MPI_Bcast (&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast (&initial_temp, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast (&final_temp, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast (&temp_step, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    //MPI_Bcast (&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    //MPI_Bcast (&initial_temp, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    //MPI_Bcast (&final_temp, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    //MPI_Bcast (&temp_step, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
 
     for ( double T = initial_temp; T <= final_temp; T+=temp_step){
         cout << T << endl;
         srand(time(NULL));
         double beta = 1.0/(T);
         double M = 0.0; double E = 0.0;
-        // setting an array for average values from the Metropolis algorythm
         double average[5];
         for( int i = 0; i < 5; i++) average[i] = 0.;
 
@@ -145,18 +145,20 @@ int main(int argc, char* argv[])
             average[0] += E; average[1] += E*E;
             average[2] += M; average[3] += M*M; average[4] += fabs(M);
         }
+        /*
         for( int i =0; i < 5; i++){
           MPI_Reduce(&average[i], &total_average[i], 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         }
-
+        if(my_rank == 0) {
+           dump_to_file(max_cycles, T, N, total_average);
+        }*/
         dump_to_file(max_cycles, T, N, total_average);
     }
-    MPI_Finalize();
-    cout << "DONE!" << endl;
+    //MPI_Finalize();
     return 0;
 }
 void dump_to_file(int max_cycles, double T, int N, double *total_average){
-    double norm = 1/((double) (max_cycles)*4);  // divided by total number of cycles in addition to averaging the MPI total
+    double norm = 1/((double) (max_cycles));//  *4);  // divided by total number of cycles in addition to averaging the MPI total
     double Etotal_average = total_average[0]*norm;
     double E2total_average = total_average[1]*norm;
     double Mtotal_average = total_average[2]*norm;
@@ -165,9 +167,10 @@ void dump_to_file(int max_cycles, double T, int N, double *total_average){
     // all expectation values are per spin, divide by 1/n_spins/n_spins
     double Evariance = (E2total_average- Etotal_average*Etotal_average)/N/N;
     double Mabsvariance = (M2total_average - Mabstotal_average*Mabstotal_average)/N/N;
-    double Mvariance = (M2total_average - Mtotal_average*Mtotal_average)/N/N;
+    //double Mvariance = (M2total_average - Mtotal_average*Mtotal_average)/N/N;
     double Cv = Evariance/(T*T);
-    double chi = Mvariance/T;
+    cout << sqrt(Evariance*N*N) << endl;
+    double chi = Mabsvariance/T;
     outputFile1 << setiosflags(ios::showpoint | ios::uppercase);
     outputFile2 << setiosflags(ios::showpoint | ios::uppercase);
     outputFile3 << setiosflags(ios::showpoint | ios::uppercase);
