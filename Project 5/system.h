@@ -23,7 +23,7 @@ public:
     void applyPeriodicBoundaryConditions(int N);
     void removeTotalMomentum(int N);
     void calculateForces(int N);
-    void step(double dt, int N);
+    void step(double dt,int N);
 
     // Setters and getters
     std::vector<Atom *> &atoms() { return m_atoms; } // Returns a reference to the std::vector of atom pointers

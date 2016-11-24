@@ -13,8 +13,8 @@ using namespace std;
 
 int main(int numberOfArguments, char **argumentList)
 {
-    int numberOfUnitCells = 4;
-    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
+    int numberOfUnitCells = 5;
+    double initialTemperature = UnitConverter::temperatureFromSI(25.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
     // If a first argument is provided, it is the number of unit cells
@@ -35,8 +35,9 @@ int main(int numberOfArguments, char **argumentList)
     System system;
     system.createFCCLattice(numberOfUnitCells, latticeConstant, initialTemperature);
 
-    system.potential().setEpsilon(1.0);
-    system.potential().setSigma(1.0);
+    system.potential().setEpsilon(1);
+    system.potential().setSigma(1);
+    cout << UnitConverter::lengthFromAngstroms(3.405)<< endl;
 
     system.removeTotalMomentum(numberOfUnitCells);
 
@@ -51,7 +52,6 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "TotalEnergy" << endl;
     for(int timestep=0; timestep<1000; timestep++) {
         system.step(dt, numberOfUnitCells);
-
         statisticsSampler.sample(system);
         if( timestep % 100 == 0 ) {
             // Print the timestep every 100 timesteps

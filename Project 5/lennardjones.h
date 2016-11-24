@@ -10,7 +10,7 @@ private:
 
 public:
     LennardJones() { }
-    void calculateForces(class System &system);
+    void calculateForces(class System &system, int N);
     double potentialEnergy() const;
     double sigma() const;
     void setSigma(double sigma);

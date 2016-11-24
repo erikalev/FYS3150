@@ -2,7 +2,7 @@
 #include "statisticssampler.h"
 #include "lennardjones.h"
 #include <iostream>
-
+#include "unitconverter.h"
 using std::ofstream; using std::cout; using std::endl;
 
 StatisticsSampler::StatisticsSampler()
@@ -40,21 +40,27 @@ void StatisticsSampler::sampleKineticEnergy(System &system)
 {
     m_kineticEnergy = 0; // Remember to reset the value from the previous timestep
     for(Atom *atom : system.atoms()) {
-
+        m_kineticEnergy += 0.5*atom->mass()*atom->velocity.lengthSquared();
     }
 }
 
 void StatisticsSampler::samplePotentialEnergy(System &system)
 {
+
     m_potentialEnergy = system.potential().potentialEnergy();
 }
 
 void StatisticsSampler::sampleTemperature(System &system)
 {
-    // Hint: reuse the kinetic energy that we already calculated
+    //std::cout << m_kineticEnergy << endl;
+    m_temperature = 2.0/3.0*m_kineticEnergy/(system.atoms().size());
 }
 
 void StatisticsSampler::sampleDensity(System &system)
 {
+    for (Atom *atom : system.atoms()){
+        m_density += (atom->position - atom->initial_position).lengthSquared();
+    }
+    m_density /= system.atoms().size();
 
 }
