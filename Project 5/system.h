@@ -15,11 +15,13 @@ private:
     LennardJones m_potential;
     double m_time = 0;
     int m_steps = 0;
+    double m_initialTindex = 0;
 
 public:
     System();
     ~System();
-    void createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature);
+    double samlpe_initialTindex() {return m_initialTindex;}
+    void createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature, int T_index);
     void applyPeriodicBoundaryConditions(int N);
     void removeTotalMomentum(int N);
     void calculateForces(int N);

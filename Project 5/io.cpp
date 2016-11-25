@@ -3,6 +3,7 @@
 #include "atom.h"
 #include "unitconverter.h"
 #include <cstdlib>
+#include "statisticssampler.h"
 using std::endl; using std::cout;
 
 

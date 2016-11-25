@@ -12,12 +12,15 @@ private:
     double m_potentialEnergy = 0;
     double m_temperature = 0;
     double m_density = 0;
+    double m_r2 = 0;
+    double m_D = 0;
 public:
     StatisticsSampler();
-    void saveToFile(System &system);
+    void saveToFile(System &system, int temperature);
     void sample(System &system);
     void sampleKineticEnergy(System &system);
     void samplePotentialEnergy(System &system);
+    void sampleDiffusion(System &system);
     void sampleTemperature(System &system);
     void sampleDensity(System &system);
     double kineticEnergy() { return m_kineticEnergy; }

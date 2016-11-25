@@ -10,20 +10,20 @@ StatisticsSampler::StatisticsSampler()
 
 }
 
-void StatisticsSampler::saveToFile(System &system)
+void StatisticsSampler::saveToFile(System &system, int temperature)
 {
     // Save the statistical properties for each timestep for plotting etc.
     // First, open the file if it's not open already
-    if(!m_file.good()) {
-        m_file.open("statistics.txt", ofstream::out);
+    if(!m_file.is_open()) {
+        m_file.open("statistics_" + std::to_string(temperature) + ".txt", ofstream::out);
         // If it's still not open, something bad happened...
-        if(!m_file.good()) {
+
+        if(!m_file.is_open()) {
             cout << "Error, could not open statistics.txt" << endl;
             exit(1);
         }
     }
-
-    // Print out values here
+    m_file << system.time() << " "<< m_density << " " << m_r2 << " " << totalEnergy()<< " " << kineticEnergy() << " " << potentialEnergy()<< endl;
 }
 
 void StatisticsSampler::sample(System &system)
@@ -33,7 +33,8 @@ void StatisticsSampler::sample(System &system)
     samplePotentialEnergy(system);
     sampleTemperature(system);
     sampleDensity(system);
-    saveToFile(system);
+    sampleDiffusion(system);
+    saveToFile(system, system.samlpe_initialTindex());
 }
 
 void StatisticsSampler::sampleKineticEnergy(System &system)
@@ -46,21 +47,30 @@ void StatisticsSampler::sampleKineticEnergy(System &system)
 
 void StatisticsSampler::samplePotentialEnergy(System &system)
 {
+    for (Atom *atom : system.atoms()) {
 
+    }
     m_potentialEnergy = system.potential().potentialEnergy();
 }
 
 void StatisticsSampler::sampleTemperature(System &system)
 {
-    //std::cout << m_kineticEnergy << endl;
     m_temperature = 2.0/3.0*m_kineticEnergy/(system.atoms().size());
+}
+
+void StatisticsSampler::sampleDiffusion(System &system){
+    m_D= 0;
+    m_r2 = 0;
+    for (Atom *atom : system.atoms()){
+        m_r2 += (atom->position - atom->initial_position).lengthSquared();
+    }
+    m_r2 /= system.atoms().size();
+    m_D = m_r2/6.0/system.time();
+
 }
 
 void StatisticsSampler::sampleDensity(System &system)
 {
-    for (Atom *atom : system.atoms()){
-        m_density += (atom->position - atom->initial_position).lengthSquared();
-    }
-    m_density /= system.atoms().size();
+
 
 }

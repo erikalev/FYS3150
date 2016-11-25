@@ -32,10 +32,14 @@ void LennardJones::calculateForces(System &system, int N)
 
     m_potentialEnergy = 0; // Remember to compute this in the loop
     int numberOfAtoms = system.atoms().size();
-    double boxLength = 5.26*N;
+
+    double boxLength = system.systemSize().x();
     double sigma = m_sigma;
+    double rCut = 2.5*m_sigma;
+    double rCut2 = rCut*rCut;
     double sigma6 = m_sigma*m_sigma*m_sigma*m_sigma*m_sigma*m_sigma;
     double sigma12 = sigma6*sigma6;
+    double potentialEnergyAtRcut = 4*m_epsilon*(sigma12*pow(rCut,-12) - sigma6*pow(rCut, -6));
     for (int i = 0; i < numberOfAtoms; i++){
         Atom *atom1 = system.atoms()[i];
         for (int j = i+1; j < numberOfAtoms; j++){
@@ -54,18 +58,23 @@ void LennardJones::calculateForces(System &system, int N)
             if ((dz) <= -boxLength/2.0) dz += boxLength;
             if ((dz) > boxLength/2.0) dz -= boxLength;
 
-            double r2 = dx*dx+dy*dy+dz*dz;
-            double r1 = sqrt(r2);
-            double r6 = r2*r2*r2;
-            double r12 = r6*r6;
+            double dr2 = dx*dx + dy*dy + dz*dz;
+            if(dr2 < rCut2) {
+                double oneOverDr2 = 1.0 / dr2;
+                double oneOverDr6 = oneOverDr2*oneOverDr2*oneOverDr2;
+                double oneOverDr12 = oneOverDr6*oneOverDr6;
+                double force_scalar = 24*m_epsilon*oneOverDr2*(2*sigma12*oneOverDr12 - sigma6*oneOverDr6);
 
-            double force_scalar = -24*m_epsilon*(2*sigma12/(r12*r1) - sigma6/(r6*r1));
-            vec3 force = vec3(force_scalar*dx, force_scalar*dy, force_scalar*dz);
+                atom1->force[0] += force_scalar*dx;
+                atom1->force[1] += force_scalar*dy;
+                atom1->force[2] += force_scalar*dz;
 
-            atom1->force  += (force);
-            atom2->force -= (force);
+                atom2->force[0] -= force_scalar*dx;
+                atom2->force[1] -= force_scalar*dy;
+                atom2->force[2] -= force_scalar*dz;
 
-            m_potentialEnergy += 4*m_epsilon*(sigma12/r12 - sigma6/r6);
+                m_potentialEnergy += 4*m_epsilon*(sigma12*oneOverDr12 - sigma6*oneOverDr6) - potentialEnergyAtRcut;
+            }
         }
     }
 }

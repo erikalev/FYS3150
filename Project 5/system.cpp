@@ -20,13 +20,19 @@ System::~System()
 
 void System::applyPeriodicBoundaryConditions(int N) {
     int numberOfAtoms = 4*N*N*N;
-    double boxLength = UnitConverter::lengthFromAngstroms(5.26)*N;
+    double boxLength = systemSize().x();
 
     for (int i = 0; i < numberOfAtoms; i++){
         Atom *atom = m_atoms[i];
         for (int dim = 0; dim < 3; dim++){
-            if (atom->position(dim) <= 0) atom->position(dim) = boxLength - atom->position(dim);
-            if (atom->position(dim) >= boxLength) atom->position(dim) -= boxLength;
+            if (atom->position(dim) <= 0){
+                atom->initial_position(dim) += boxLength;
+                atom->position(dim) += boxLength;
+            }
+            if (atom->position(dim) >= boxLength){
+                atom->initial_position(dim) -= boxLength;
+                atom->position(dim) -= boxLength;
+            }
         }
     }
 
@@ -51,39 +57,60 @@ void System::removeTotalMomentum(int N) {
     }
 }
 
-void System::createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature) {
+void System::createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature, int T_index) {
     // You should implement this function properly. Right now, 100 atoms are created uniformly placed in the system of size (10, 10, 10).
     double b = UnitConverter::lengthFromAngstroms(latticeConstant);
+
     vec3 unitVector = vec3(b, b, b);
     double T = temperature;
-    double N = numberOfUnitCellsEachDimension;
+    m_initialTindex = T_index;
 
+    double N = numberOfUnitCellsEachDimension;
+    Random::randomSeed();
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
 
                 Atom *atom1 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                atom1->position.set(i*b, j*b, k*b);
-                atom1->initial_position = vec3(i*b, j*b, k*b);
-                atom1->resetVelocityMaxwellian(temperature);
-                m_atoms.push_back(atom1);
-
                 Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                atom2->position.set((0.5+i)*b, (0.5+j)*b, k*b);
-                atom2->initial_position = vec3((0.5+i)*b, (0.5+j)*b, k*b);
-                atom2->resetVelocityMaxwellian(temperature);
-                m_atoms.push_back(atom2);
-
                 Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                atom3->position.set(i*b, (0.5+j)*b, (0.5+k)*b);
-                atom3->initial_position = vec3(i*b, (0.5+j)*b, (0.5+k)*b);
-                atom3->resetVelocityMaxwellian(temperature);
-                m_atoms.push_back(atom3);
-
                 Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+
+                double vx1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vx2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vx3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vx4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+
+
+                atom1->position.set(i*b, j*b, k*b);
+                atom2->position.set((0.5+i)*b, (0.5+j)*b, k*b);
+                atom3->position.set(i*b, (0.5+j)*b, (0.5+k)*b);
                 atom4->position.set((0.5+i)*b, j*b, (0.5+k)*b);
+
+                atom1->initial_position = vec3(i*b, j*b, k*b);
+                atom2->initial_position = vec3((0.5+i)*b, (0.5+j)*b, k*b);
+                atom3->initial_position = vec3(i*b, (0.5+j)*b, (0.5+k)*b);
                 atom4->initial_position = vec3((0.5+i)*b, j*b, (0.5+k)*b);
+
+                atom1->resetVelocityMaxwellian(temperature);
+                atom2->resetVelocityMaxwellian(temperature);
+                atom3->resetVelocityMaxwellian(temperature);
                 atom4->resetVelocityMaxwellian(temperature);
+                atom1->velocity.set(vx1, vy1, vz1);
+                atom2->velocity.set(vx2, vy2, vz2);
+                atom3->velocity.set(vx3, vy3, vz3);
+                atom4->velocity.set(vx4, vy4, vz4);
+                m_atoms.push_back(atom1);
+                m_atoms.push_back(atom2);
+                m_atoms.push_back(atom3);
                 m_atoms.push_back(atom4);
             }}}
 

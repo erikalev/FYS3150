@@ -15,6 +15,7 @@ public:
     void saveState(System &system);
     void open(const char *filename);
     void close();
+    void dumpMD();
 
 };
 #endif
