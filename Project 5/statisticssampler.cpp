@@ -23,7 +23,7 @@ void StatisticsSampler::saveToFile(System &system, int temperature)
             exit(1);
         }
     }
-    m_file << system.time() << " "<< m_density << " " << m_r2 << " " << totalEnergy()<< " " << kineticEnergy() << " " << potentialEnergy()<< endl;
+    m_file << system.time() << " "<< m_density << " " << m_r2 << " " << totalEnergy()<< " " << kineticEnergy() << " " << potentialEnergy()<< " " << StatisticsSampler::temperature() << endl;
 }
 
 void StatisticsSampler::sample(System &system)

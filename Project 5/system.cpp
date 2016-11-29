@@ -66,7 +66,7 @@ void System::createFCCLattice(int numberOfUnitCellsEachDimension, double lattice
     m_initialTindex = T_index;
 
     double N = numberOfUnitCellsEachDimension;
-    Random::randomSeed();
+    //Random::randomSeed();
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
             for (int k = 0; k < N; k++){
@@ -75,19 +75,6 @@ void System::createFCCLattice(int numberOfUnitCellsEachDimension, double lattice
                 Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
                 Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
                 Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-
-                double vx1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vy1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vz1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vx2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vy2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vz2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vx3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vy3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vz3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vx4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vy4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
-                double vz4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
 
 
                 atom1->position.set(i*b, j*b, k*b);
@@ -104,10 +91,25 @@ void System::createFCCLattice(int numberOfUnitCellsEachDimension, double lattice
                 atom2->resetVelocityMaxwellian(temperature);
                 atom3->resetVelocityMaxwellian(temperature);
                 atom4->resetVelocityMaxwellian(temperature);
+                /*
+                double vx1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz1 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vx2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz2 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vx3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz3 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vx4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vy4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+                double vz4 = Random::nextGaussian(0, sqrt(temperature/atom1->mass()));
+
                 atom1->velocity.set(vx1, vy1, vz1);
                 atom2->velocity.set(vx2, vy2, vz2);
                 atom3->velocity.set(vx3, vy3, vz3);
                 atom4->velocity.set(vx4, vy4, vz4);
+                */
                 m_atoms.push_back(atom1);
                 m_atoms.push_back(atom2);
                 m_atoms.push_back(atom3);
