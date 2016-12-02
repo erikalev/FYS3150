@@ -3,7 +3,8 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXX += -g
+QMAKE_CXX += -g -fopenmp
+QMAKE_LFLAGS += -fopenmp
 
 SOURCES += main.cpp \
     atom.cpp \

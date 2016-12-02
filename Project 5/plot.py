@@ -6,7 +6,9 @@ D_list = []
 T_equilibrium = []
 
 for index in xrange(300, 991, 10):
-    infile = open("../build-molecular-dynamics-fys3150-Desktop-Release/statistics_" + str(index) + ".txt", "r")
+    filename = "/home/erik/MDDATA/build-molecular-dynamics-fys3150-Desktop-Release/statistics_" + str(index) + ".txt"
+    print filename
+    infile = open(filename, "r")    
     N = 2000
     T_values.append(index)
     t = np.zeros(N)
@@ -38,13 +40,13 @@ for index in xrange(300, 991, 10):
     D = 0
     r_val = r2[int(N*4.0/5.0):]
     t_val = t[int(N*4.0/5.0):]
-
-    for i in xrange(1, len(r_val)):
-        D +=  (r_val[i]-r_val[i-1])/(t_val[i] - t_val[i-1])
-
-    D_list.append(D/6.0/(len(r_val)-1))
-
-    plt.plot(t, T)
+    
+    #for i in xrange(1, len(r_val)):
+        #D +=  (r_val[i]-r_val[i-1])/(t_val[i] - t_val[i-1])
+    D = (r_val[-1] - r_val[0])/(t_val[-1] - t_val[0])
+    #D_list.append(D/6.0/(len(r_val)-1))
+    D_list.append(D/6)
+    plt.plot(t, r2)
     plt.xlabel("$time$ $[s]$")
     plt.ylabel("$<r^2(t)>$ $[m^2]$")
     infile.close()

@@ -50,7 +50,7 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "PotentialEnergy" <<
             setw(20) << "TotalEnergy" << endl;
 
-    for(int timestep=0; timestep<1000000000; timestep++) {
+    for(int timestep=0; timestep<50000; timestep++) {
         system.step(dt, numberOfUnitCells);
         statisticsSampler.sample(system);
         if( timestep % 100 == 0 ) {
