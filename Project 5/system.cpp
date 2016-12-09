@@ -19,6 +19,8 @@ System::~System()
 }
 
 void System::applyPeriodicBoundaryConditions(int N) {
+    // Method for updating the periodiv boundary condition
+    // Also updates the initial position of the atoms
     int numberOfAtoms = 4*N*N*N;
     double boxLength = systemSize().x();
 
@@ -40,7 +42,6 @@ void System::applyPeriodicBoundaryConditions(int N) {
 }
 
 void System::removeTotalMomentum(int N) {
-
     double numberOfAtoms = 4*N*N*N;
     vec3 totalVelocity = vec3(0, 0, 0);
     for (int i = 0; i < numberOfAtoms; i++){
@@ -55,11 +56,8 @@ void System::removeTotalMomentum(int N) {
 }
 
 void System::createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature, int T_index) {
-    // You should implement this function properly. Right now, 100 atoms are created uniformly placed in the system of size (10, 10, 10).
-    double b = UnitConverter::lengthFromAngstroms(latticeConstant);
 
-    vec3 unitVector = vec3(b, b, b);
-    double T = temperature;
+    double b = UnitConverter::lengthFromAngstroms(latticeConstant);
     m_initialTindex = T_index;
 
     double N = numberOfUnitCellsEachDimension;
@@ -116,12 +114,12 @@ void System::createFCCLattice(int numberOfUnitCellsEachDimension, double lattice
     setSystemSize(vec3(N*b, N*b, N*b)); // Remember to set the correct system size!
 }
 
-void System::calculateForces(int N) {
+void System::calculateForces() {
     for(Atom *atom : m_atoms) {
         atom->resetForce();
     }
 
-    m_potential.calculateForces(*this, N); // this is a pointer, *this is a reference to this object
+    m_potential.calculateForces(*this); // this is a pointer, *this is a reference to this object
     }
 
 

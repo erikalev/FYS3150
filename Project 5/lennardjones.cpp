@@ -27,11 +27,17 @@ void LennardJones::setEpsilon(double epsilon)
     m_epsilon = epsilon;
 }
 
-void LennardJones::calculateForces(System &system, int N)
+void LennardJones::calculateForces(System &system)
 {
+    /*
+     This funciton calculates the total force on each atom given by the Lennard Jones potensial
+     It also includes a cut-off value rCut where F(r) is more or less zero and an update on the potensial
+     energy value
+     */
+
     m_potentialEnergy = 0; // Remember to compute this in the loop
     const int numberOfAtoms = system.atoms().size();
-
+    double epsilon24 = 24*m_epsilon;
     double boxLength = system.systemSize().x();
     double rCut = 2.5*m_sigma;
     double rCut2 = rCut*rCut;
@@ -66,11 +72,12 @@ void LennardJones::calculateForces(System &system, int N)
             if ((dz) > boxLength/2.0) dz -= boxLength;
 
             double dr2 = dx*dx + dy*dy + dz*dz;
+
             if(dr2 < rCut2) {
                 double oneOverDr2 = 1.0 / dr2;
                 double oneOverDr6 = oneOverDr2*oneOverDr2*oneOverDr2;
                 double oneOverDr12 = oneOverDr6*oneOverDr6;
-                double force_scalar = 24*m_epsilon*oneOverDr2*(2*sigma12*oneOverDr12 - sigma6*oneOverDr6);
+                double force_scalar = epsilon24*oneOverDr2*(2*sigma12*oneOverDr12 - sigma6*oneOverDr6);
 
                 fx += force_scalar*dx;
                 fy += force_scalar*dy;

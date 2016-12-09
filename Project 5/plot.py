@@ -1,15 +1,16 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
-t_values = [500., 550., 600., 650., 700., 710., 720., 730., 740., 750., 760., 770., 780., 790., 800., 850., 900., 950., 1000.];
 T_values = []
 D_list = []
 T_equilibrium = []
+T_index = [513, 515, 517, 520, 530, 540, 545, 550]
 
-for index in xrange(300, 991, 10):
-    filename = "/home/erik/MDDATA/build-molecular-dynamics-fys3150-Desktop-Release/statistics_" + str(index) + ".txt"
-    print filename
+timesteps = [i for i in range(60000)]
+for index in T_index:
+    filename = "/home/erik/FYS3150/build-molecular-dynamics-fys3150-Desktop-Release/statistics_" + str(index) + ".txt"
     infile = open(filename, "r")    
-    N = 2000
+    N = 60000
     T_values.append(index)
     t = np.zeros(N)
     density = np.zeros(N)
@@ -34,27 +35,22 @@ for index in xrange(300, 991, 10):
         if i == N:
             break
     infile.close()
-
-    T_equilibrium.append(sum(T[1000:])/len(T[1000:]))
+    T_sum = np.mean(T[int(N*8.0/10.0):N])
+    T_equilibrium.append(index)
 
     D = 0
     r_val = r2[int(N*4.0/5.0):]
     t_val = t[int(N*4.0/5.0):]
-    
-    #for i in xrange(1, len(r_val)):
-        #D +=  (r_val[i]-r_val[i-1])/(t_val[i] - t_val[i-1])
     D = (r_val[-1] - r_val[0])/(t_val[-1] - t_val[0])
-    #D_list.append(D/6.0/(len(r_val)-1))
     D_list.append(D/6)
-    plt.plot(t, r2)
-    plt.xlabel("$time$ $[s]$")
-    plt.ylabel("$<r^2(t)>$ $[m^2]$")
+
+    plt.plot(timesteps, r2)    
+    plt.xlabel("$time steps$")
+    plt.ylabel("$<r^2(t)>$ [Angstrom^2]")
     infile.close()
 
-plt.ylabel("$Temperature$ $[K]$")
-plt.xlabel("$time$ $[1.00224*10^{-13} s]$")
 plt.show()
-plt.plot([i/2 for i in T_values], D_list)
+plt.plot(T_equilibrium, D_list, "o")
 plt.xlabel("Temperature")
 plt.ylabel("Diffusion coefficient")
 plt.show()

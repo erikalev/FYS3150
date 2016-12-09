@@ -24,7 +24,7 @@ public:
     void createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature, int T_index);
     void applyPeriodicBoundaryConditions(int N);
     void removeTotalMomentum(int N);
-    void calculateForces(int N);
+    void calculateForces();
     void step(double dt,int N);
 
     // Setters and getters
